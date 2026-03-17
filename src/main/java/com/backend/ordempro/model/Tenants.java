@@ -8,8 +8,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
 @Data
 @Entity
 public class Tenants {
@@ -17,7 +15,7 @@ public class Tenants {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String Whatsapp;
+    private String whatsapp;
     private String email;
     private String cnpj;
     private String password;

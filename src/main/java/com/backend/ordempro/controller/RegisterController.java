@@ -22,6 +22,9 @@ public class RegisterController {
     @PostMapping("/tenant")
     public ResponseEntity<TenantDTO> CreateTenant(@RequestBody TenantDTO tenant) {
         Tenants tenants = new ModelMapper().map(tenant, Tenants.class);
+        if(this.tenantsRepository.findByEmail(tenants.getEmail()).isPresent()){
+            return ResponseEntity.badRequest().build();
+        }
         tenants.setPassword(BCrypt.hashpw(tenants.getPassword(), BCrypt.gensalt()));
         this.tenantsRepository.save(tenants);
         return ResponseEntity.ok(tenant);
