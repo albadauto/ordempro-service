@@ -8,18 +8,26 @@ import java.security.Key;
 import java.util.Date;
 
 public class JwtUtil {
-    private static final Key KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final String KEY = "minha-chave-secreta-super-forte-123456";
 
-    public static String GenToken(String Email){
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(KEY.getBytes());
+    }
+    public String GenToken(String Email){
         return Jwts.builder()
                 .setSubject(Email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000))
-                .signWith(KEY)
+                .signWith(getSigningKey())
                 .compact();
     }
 
-    public static String validateToken(String token){
-        return Jwts.parserBuilder().build().parseClaimsJws(token).getBody().getSubject();
+    public String validateToken(String token){
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey()) // ✅ ESSENCIAL
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 }

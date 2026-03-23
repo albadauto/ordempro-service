@@ -1,4 +1,10 @@
 package com.backend.ordempro.dto.customer;
 
-public class CustomerUpdateRequestDto {
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class CustomerUpdateRequestDTO extends CustomerRequestDTO{
+    private Long id;
 }

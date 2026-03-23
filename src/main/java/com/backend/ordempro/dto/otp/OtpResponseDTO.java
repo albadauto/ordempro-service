@@ -1,4 +1,4 @@
-package com.backend.ordempro.dto;
+package com.backend.ordempro.dto.otp;
 
 import lombok.Getter;
 import lombok.Setter;

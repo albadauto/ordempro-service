@@ -1,6 +1,6 @@
 package com.backend.ordempro.controller;
 
-import com.backend.ordempro.dto.TenantDTO;
+import com.backend.ordempro.dto.tenant.TenantDTO;
 import com.backend.ordempro.model.Tenants;
 import com.backend.ordempro.repository.TenantsRepository;
 import org.mindrot.jbcrypt.BCrypt;

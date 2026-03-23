@@ -22,14 +22,14 @@ public class AuthController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<LoginResponseDTO> authenticate(@RequestBody LoginRequestDTO dto){
-        System.out.println(dto.getEmail());
         Optional<Tenants> tenant = this.tenantsRepository.findByEmail(dto.getEmail());
         if(tenant.isPresent()){
             Tenants tenantModel = tenant.get();
             if(BCrypt.checkpw(dto.getPassword(), tenantModel.getPassword())){
-                String token = JwtUtil.GenToken(tenantModel.getEmail());
+                String token = new JwtUtil().GenToken(tenantModel.getEmail());
                 LoginResponseDTO response = new LoginResponseDTO();
                 response.setToken(token);
+                response.setIdTenant(tenant.get().getId());
                 return ResponseEntity.ok(response);
             }else{
                 return ResponseEntity.notFound().build();

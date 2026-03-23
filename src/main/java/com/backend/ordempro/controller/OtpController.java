@@ -1,6 +1,6 @@
 package com.backend.ordempro.controller;
 
-import com.backend.ordempro.dto.OtpResponseDTO;
+import com.backend.ordempro.dto.otp.OtpResponseDTO;
 import com.backend.ordempro.model.Otp;
 import com.backend.ordempro.model.Tenants;
 import com.backend.ordempro.repository.OtpRepository;
@@ -8,7 +8,6 @@ import com.backend.ordempro.repository.TenantsRepository;
 import com.backend.ordempro.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,7 +50,6 @@ public class OtpController {
         for (int i = 0; i < 6; i++) {
             sb.append(random.nextInt(10)); // Gera um número de 0-9
         }
-
         return sb.toString();
     }
 
