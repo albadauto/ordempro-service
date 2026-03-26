@@ -1,5 +1,4 @@
 package com.backend.ordempro.controller;
-
 import com.backend.ordempro.config.mapper.ICustomerMapper;
 import com.backend.ordempro.dto.customer.CustomerRequestDTO;
 import com.backend.ordempro.dto.customer.CustomerResponseDTO;
@@ -8,7 +7,6 @@ import com.backend.ordempro.model.Customer;
 import com.backend.ordempro.model.Tenants;
 import com.backend.ordempro.repository.CustomerRepository;
 import com.backend.ordempro.repository.TenantsRepository;
-import org.apache.coyote.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
