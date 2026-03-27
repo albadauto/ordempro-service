@@ -4,9 +4,11 @@ import com.backend.ordempro.config.mapper.IServiceOrderMapper;
 import com.backend.ordempro.dto.api.ApiResponseDTO;
 import com.backend.ordempro.dto.serviceorder.ServiceOrderRequestDTO;
 import com.backend.ordempro.dto.serviceorder.ServiceOrderResponseDTO;
+import com.backend.ordempro.model.Customer;
 import com.backend.ordempro.model.ServiceOrder;
 import com.backend.ordempro.model.Status;
 import com.backend.ordempro.model.Tenants;
+import com.backend.ordempro.repository.CustomerRepository;
 import com.backend.ordempro.repository.ServiceOrderRepository;
 import com.backend.ordempro.repository.StatusRepository;
 import com.backend.ordempro.repository.TenantsRepository;
@@ -20,16 +22,19 @@ import java.util.Optional;
 public class ServiceOrderController {
     private final IServiceOrderMapper serviceOrderMapper;
     private final ServiceOrderRepository serviceOrderRepository;
+    private final CustomerRepository customerRepository;
     private final StatusRepository statusRepository;
     private final TenantsRepository tenantsRepository;
     public ServiceOrderController(IServiceOrderMapper serviceOrderMapper,
                                   ServiceOrderRepository serviceOrderRepository,
                                   StatusRepository statusRepository,
-                                  TenantsRepository tenantsRepository){
+                                  TenantsRepository tenantsRepository,
+                                  CustomerRepository customerRepository){
         this.serviceOrderMapper = serviceOrderMapper;
         this.serviceOrderRepository = serviceOrderRepository;
         this.statusRepository = statusRepository;
         this.tenantsRepository = tenantsRepository;
+        this.customerRepository = customerRepository;
     }
 
     @PostMapping("/create-order")
@@ -38,8 +43,10 @@ public class ServiceOrderController {
         entity.setOrderNumber(this.generateRandomOSNumber());
         Optional<Status> status = this.statusRepository.findById(dto.getStatusId());
         Optional<Tenants> tenants = this.tenantsRepository.findById(dto.getTenantId());
+        Optional<Customer> customer = this.customerRepository.findById(dto.getCustomerId());
         status.ifPresent(entity::setStatus);
         tenants.ifPresent(entity::setTenants);
+        customer.ifPresent(entity::setCustomer);
         ServiceOrder orderSaved = this.serviceOrderRepository.save(entity);
         ApiResponseDTO<String> response = new ApiResponseDTO<String>();
         response.setSuccess(true);
@@ -47,9 +54,9 @@ public class ServiceOrderController {
         return ResponseEntity.ok().body(response);
     }
 
-    @GetMapping("/get-service-order/{orderNumber}")
-    public ResponseEntity<ServiceOrderResponseDTO> getServiceOrderByOrderNumber(@PathVariable String orderNumber){
-        Optional<ServiceOrder> serviceOrder = this.serviceOrderRepository.findByOrderNumber(orderNumber);
+    @GetMapping("/get-service-order/{orderNumber}/{tenantId}")
+    public ResponseEntity<ServiceOrderResponseDTO> getServiceOrderByOrderNumber(@PathVariable String orderNumber, @PathVariable Long tenantId){
+        Optional<ServiceOrder> serviceOrder = this.serviceOrderRepository.findByOrderNumberAndTenantId(orderNumber, tenantId);
         if(serviceOrder.isPresent()){
             ServiceOrderResponseDTO response = this.serviceOrderMapper.toDtoResponse(serviceOrder.get());
             return ResponseEntity.ok().body(response);

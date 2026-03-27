@@ -5,13 +5,11 @@ import lombok.Data;
 
 @Entity
 @Data
+@Table(name = "service_order")
 public class ServiceOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private String email;
-    private String whatsapp;
     private String obs;
     private String orderNumber;
 
@@ -19,7 +17,11 @@ public class ServiceOrder {
     @JoinColumn(name="tenantId")
     private Tenants tenants;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name="statusId")
     private Status status;
+
+    @ManyToOne
+    @JoinColumn(name = "customerId")
+    private Customer customer;
 }

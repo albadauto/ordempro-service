@@ -6,11 +6,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ServiceOrderRequestDTO {
-    private String name;
-    private String email;
-    private String whatsapp;
     private String obs;
     private String orderNumber;
     private Long tenantId;
     private Long statusId;
+    private Long customerId;
 }
