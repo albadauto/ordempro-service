@@ -15,6 +15,7 @@ import com.backend.ordempro.repository.TenantsRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -25,6 +26,7 @@ public class ServiceOrderController {
     private final CustomerRepository customerRepository;
     private final StatusRepository statusRepository;
     private final TenantsRepository tenantsRepository;
+
     public ServiceOrderController(IServiceOrderMapper serviceOrderMapper,
                                   ServiceOrderRepository serviceOrderRepository,
                                   StatusRepository statusRepository,
@@ -62,6 +64,17 @@ public class ServiceOrderController {
             return ResponseEntity.ok().body(response);
         }
          return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/get-all-os/{tenantId}")
+    public ResponseEntity<List<ServiceOrderResponseDTO>> getAllServiceOrder(@PathVariable Long tenantId){
+        List<ServiceOrder> servicesOrder = this.serviceOrderRepository.findAllByTenantId(tenantId);
+        if(!servicesOrder.isEmpty()){
+            List<ServiceOrderResponseDTO> responseDto = this.serviceOrderMapper.toDtoResponseList(servicesOrder);
+            return ResponseEntity.ok().body(responseDto);
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
     private String generateRandomOSNumber(){

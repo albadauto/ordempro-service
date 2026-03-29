@@ -20,6 +20,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").authenticated()
                         .requestMatchers("/customer/**").authenticated()
                         .requestMatchers("/serviceorder/**").authenticated()
+                        .requestMatchers("/status/**").authenticated()
                         .anyRequest().permitAll()
 
                 ).addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

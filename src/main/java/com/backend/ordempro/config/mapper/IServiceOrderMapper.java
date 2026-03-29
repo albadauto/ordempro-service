@@ -8,10 +8,18 @@ import com.backend.ordempro.model.ServiceOrder;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface IServiceOrderMapper {
     @Mapping(target = "tenants", ignore = true)
     ServiceOrder toEntity(ServiceOrderRequestDTO dto);
     ServiceOrderRequestDTO toDto(ServiceOrder dto);
+    @Mapping(target = "tenant", source = "tenants")
+    @Mapping(target = "customer", source = "customer")
+    @Mapping(target = "status", source = "status")
     ServiceOrderResponseDTO toDtoResponse(ServiceOrder entity);
+
+
+    List<ServiceOrderResponseDTO> toDtoResponseList(List<ServiceOrder> entity);
 }

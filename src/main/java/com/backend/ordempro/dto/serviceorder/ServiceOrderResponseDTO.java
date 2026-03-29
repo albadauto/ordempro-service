@@ -1,5 +1,8 @@
 package com.backend.ordempro.dto.serviceorder;
 
+import com.backend.ordempro.dto.customer.CustomerResponseDTO;
+import com.backend.ordempro.dto.status.StatusResponseDTO;
+import com.backend.ordempro.dto.tenant.TenantDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +11,7 @@ import lombok.Setter;
 public class ServiceOrderResponseDTO {
     private String obs;
     private String orderNumber;
-    private Long tenantId;
-    private Long statusId;
-    private Long customerId;
+    private TenantDTO tenant;
+    private CustomerResponseDTO customer;
+    private StatusResponseDTO status;
 }

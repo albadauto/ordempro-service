@@ -4,9 +4,13 @@ import com.backend.ordempro.model.ServiceOrder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ServiceOrderRepository extends JpaRepository<ServiceOrder, Long> {
    @Query("SELECT s FROM ServiceOrder s JOIN FETCH s.tenants WHERE s.orderNumber = :orderNumber and s.tenants.id = :tenantId")
    Optional<ServiceOrder> findByOrderNumberAndTenantId(String orderNumber, Long tenantId);
+
+   @Query("SELECT s FROM ServiceOrder s JOIN FETCH s.tenants WHERE s.tenants.id = :tenantId")
+   List<ServiceOrder> findAllByTenantId(Long tenantId);
 }
