@@ -4,6 +4,7 @@ import com.backend.ordempro.config.mapper.IServiceOrderMapper;
 import com.backend.ordempro.dto.api.ApiResponseDTO;
 import com.backend.ordempro.dto.serviceorder.ServiceOrderRequestDTO;
 import com.backend.ordempro.dto.serviceorder.ServiceOrderResponseDTO;
+import com.backend.ordempro.dto.serviceorder.ServiceOrderUpdateRequestDTO;
 import com.backend.ordempro.model.Customer;
 import com.backend.ordempro.model.ServiceOrder;
 import com.backend.ordempro.model.Status;
@@ -15,6 +16,7 @@ import com.backend.ordempro.repository.TenantsRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +33,7 @@ public class ServiceOrderController {
                                   ServiceOrderRepository serviceOrderRepository,
                                   StatusRepository statusRepository,
                                   TenantsRepository tenantsRepository,
-                                  CustomerRepository customerRepository){
+                                  CustomerRepository customerRepository) {
         this.serviceOrderMapper = serviceOrderMapper;
         this.serviceOrderRepository = serviceOrderRepository;
         this.statusRepository = statusRepository;
@@ -40,7 +42,7 @@ public class ServiceOrderController {
     }
 
     @PostMapping("/create-order")
-    public ResponseEntity<ApiResponseDTO<String>> createOrder(@RequestBody ServiceOrderRequestDTO dto){
+    public ResponseEntity<ApiResponseDTO<String>> createOrder(@RequestBody ServiceOrderRequestDTO dto) {
         ServiceOrder entity = this.serviceOrderMapper.toEntity(dto);
         entity.setOrderNumber(this.generateRandomOSNumber());
         Optional<Status> status = this.statusRepository.findById(dto.getStatusId());
@@ -49,6 +51,7 @@ public class ServiceOrderController {
         status.ifPresent(entity::setStatus);
         tenants.ifPresent(entity::setTenants);
         customer.ifPresent(entity::setCustomer);
+        entity.setInsertDate(LocalDate.now());
         ServiceOrder orderSaved = this.serviceOrderRepository.save(entity);
         ApiResponseDTO<String> response = new ApiResponseDTO<String>();
         response.setSuccess(true);
@@ -56,20 +59,20 @@ public class ServiceOrderController {
         return ResponseEntity.ok().body(response);
     }
 
-    @GetMapping("/get-service-order/{orderNumber}/{tenantId}")
-    public ResponseEntity<ServiceOrderResponseDTO> getServiceOrderByOrderNumber(@PathVariable String orderNumber, @PathVariable Long tenantId){
-        Optional<ServiceOrder> serviceOrder = this.serviceOrderRepository.findByOrderNumberAndTenantId(orderNumber, tenantId);
-        if(serviceOrder.isPresent()){
+    @GetMapping("/get-service-order/{id}/{tenantId}")
+    public ResponseEntity<ServiceOrderResponseDTO> getServiceOrderByOrderNumber(@PathVariable Long id, @PathVariable Long tenantId) {
+        Optional<ServiceOrder> serviceOrder = this.serviceOrderRepository.findByIdAndTenantId(id, tenantId);
+        if (serviceOrder.isPresent()) {
             ServiceOrderResponseDTO response = this.serviceOrderMapper.toDtoResponse(serviceOrder.get());
             return ResponseEntity.ok().body(response);
         }
-         return ResponseEntity.notFound().build();
+        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/get-all-os/{tenantId}")
-    public ResponseEntity<List<ServiceOrderResponseDTO>> getAllServiceOrder(@PathVariable Long tenantId){
+    public ResponseEntity<List<ServiceOrderResponseDTO>> getAllServiceOrder(@PathVariable Long tenantId) {
         List<ServiceOrder> servicesOrder = this.serviceOrderRepository.findAllByTenantId(tenantId);
-        if(!servicesOrder.isEmpty()){
+        if (!servicesOrder.isEmpty()) {
             List<ServiceOrderResponseDTO> responseDto = this.serviceOrderMapper.toDtoResponseList(servicesOrder);
             return ResponseEntity.ok().body(responseDto);
         }
@@ -77,7 +80,33 @@ public class ServiceOrderController {
         return ResponseEntity.notFound().build();
     }
 
-    private String generateRandomOSNumber(){
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<ServiceOrderResponseDTO> editOrder(@PathVariable Long id, @RequestBody ServiceOrderUpdateRequestDTO body) {
+        Optional<ServiceOrder> serviceOrderEntityOpt = this.serviceOrderRepository.findById(id);
+        if (serviceOrderEntityOpt.isPresent()) {
+            ServiceOrder serviceOrderEntity = this.serviceOrderMapper.toDtoRequestUpdate(body);
+            Optional<Status> status = this.statusRepository.findById(body.getStatusId());
+            Optional<Tenants> tenants = this.tenantsRepository.findById(body.getTenantId());
+            Optional<Customer> customer = this.customerRepository.findById(body.getCustomerId());
+            status.ifPresent(serviceOrderEntity::setStatus);
+            tenants.ifPresent(serviceOrderEntity::setTenants);
+            customer.ifPresent(serviceOrderEntity::setCustomer);
+            ServiceOrder response = this.serviceOrderRepository.save(serviceOrderEntity);
+            ServiceOrderResponseDTO responseDto = this.serviceOrderMapper.toDtoResponse(response);
+            return ResponseEntity.ok().body(responseDto);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<ApiResponseDTO<String>> deleteOrder(@PathVariable Long id){
+        this.serviceOrderRepository.deleteById(id);
+        ApiResponseDTO<String> response = new ApiResponseDTO<String>();
+        response.setSuccess(true);
+        return ResponseEntity.ok().body(response);
+    }
+
+    private String generateRandomOSNumber() {
         String charPool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         int length = 10;
         StringBuilder randomString = new StringBuilder();

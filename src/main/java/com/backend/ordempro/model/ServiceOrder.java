@@ -3,6 +3,9 @@ package com.backend.ordempro.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 @Entity
 @Data
 @Table(name = "service_order")
@@ -12,6 +15,7 @@ public class ServiceOrder {
     private Long id;
     private String obs;
     private String orderNumber;
+    private LocalDate insertDate;
 
     @ManyToOne
     @JoinColumn(name="tenantId")

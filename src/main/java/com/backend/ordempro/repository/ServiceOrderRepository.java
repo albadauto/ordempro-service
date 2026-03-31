@@ -8,9 +8,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ServiceOrderRepository extends JpaRepository<ServiceOrder, Long> {
-   @Query("SELECT s FROM ServiceOrder s JOIN FETCH s.tenants WHERE s.orderNumber = :orderNumber and s.tenants.id = :tenantId")
-   Optional<ServiceOrder> findByOrderNumberAndTenantId(String orderNumber, Long tenantId);
+   @Query("SELECT s FROM ServiceOrder s JOIN FETCH s.tenants WHERE s.id = :id and s.tenants.id = :tenantId ORDER BY s.id desc")
+   Optional<ServiceOrder> findByIdAndTenantId(Long id, Long tenantId);
 
-   @Query("SELECT s FROM ServiceOrder s JOIN FETCH s.tenants WHERE s.tenants.id = :tenantId")
+   @Query("SELECT s FROM ServiceOrder s JOIN FETCH s.tenants WHERE s.tenants.id = :tenantId and s.status.id != 6")
    List<ServiceOrder> findAllByTenantId(Long tenantId);
+
+   @Query("SELECT s FROM ServiceOrder s JOIN FETCH s.status WHERE s.id = :id and s.status.id != 6")
+   Optional<ServiceOrder> findByIdAndNotFinish(Long id);
 }
