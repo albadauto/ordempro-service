@@ -23,15 +23,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/authenticate").permitAll()
-                        .requestMatchers("/admin/**").authenticated()
-                        .requestMatchers("/customer/**").authenticated()
-                        .requestMatchers("/serviceorder/**").authenticated()
-                        .requestMatchers("/status/**").authenticated()
-                        .anyRequest().permitAll()
-
-                ).addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-        ;
+                        .requestMatchers("/authenticate/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
