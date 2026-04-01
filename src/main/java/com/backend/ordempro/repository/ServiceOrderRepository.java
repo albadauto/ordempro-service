@@ -4,6 +4,7 @@ import com.backend.ordempro.model.ServiceOrder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +15,7 @@ public interface ServiceOrderRepository extends JpaRepository<ServiceOrder, Long
    @Query("SELECT s FROM ServiceOrder s JOIN FETCH s.tenants WHERE s.tenants.id = :tenantId and s.status.id != 6")
    List<ServiceOrder> findAllByTenantId(Long tenantId);
 
-   @Query("SELECT s FROM ServiceOrder s JOIN FETCH s.status WHERE s.id = :id and s.status.id != 6")
-   Optional<ServiceOrder> findByIdAndNotFinish(Long id);
+   @Query("SELECT s FROM ServiceOrder s JOIN FETCH s.status WHERE s.status.id = 6 and s.tenants.id = :tenantId " +
+           "and s.insertDate >= :startDate and s.insertDate < :endDate")
+   List<ServiceOrder> findOsDelivered(Long tenantId, LocalDate startDate, LocalDate endDate);
 }

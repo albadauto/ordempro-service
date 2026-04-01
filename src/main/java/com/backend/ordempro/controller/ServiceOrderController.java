@@ -3,6 +3,7 @@ package com.backend.ordempro.controller;
 import com.backend.ordempro.config.mapper.IServiceOrderMapper;
 import com.backend.ordempro.dto.api.ApiResponseDTO;
 import com.backend.ordempro.dto.serviceorder.ServiceOrderRequestDTO;
+import com.backend.ordempro.dto.serviceorder.ServiceOrderRequestFilterDTO;
 import com.backend.ordempro.dto.serviceorder.ServiceOrderResponseDTO;
 import com.backend.ordempro.dto.serviceorder.ServiceOrderUpdateRequestDTO;
 import com.backend.ordempro.model.Customer;
@@ -91,11 +92,27 @@ public class ServiceOrderController {
             status.ifPresent(serviceOrderEntity::setStatus);
             tenants.ifPresent(serviceOrderEntity::setTenants);
             customer.ifPresent(serviceOrderEntity::setCustomer);
+
+            System.out.println(serviceOrderEntityOpt.get().getInsertDate());
+            serviceOrderEntity.setInsertDate(serviceOrderEntityOpt.get().getInsertDate());
             ServiceOrder response = this.serviceOrderRepository.save(serviceOrderEntity);
             ServiceOrderResponseDTO responseDto = this.serviceOrderMapper.toDtoResponse(response);
             return ResponseEntity.ok().body(responseDto);
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/get-os-delivered")
+    public ResponseEntity<List<ServiceOrderResponseDTO>> getOsDelivered(@RequestBody ServiceOrderRequestFilterDTO body){
+        LocalDate init = body.getInsertDate().withDayOfMonth(1);
+        LocalDate end = init.plusMonths(1);
+        List<ServiceOrder> listOs = this.serviceOrderRepository.findOsDelivered(body.getTenantId(), init, end);
+        if(!listOs.isEmpty()){
+            List<ServiceOrderResponseDTO> responseDto = this.serviceOrderMapper.toDtoResponseList(listOs);
+            return ResponseEntity.ok().body(responseDto);
+        }else{
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/delete/{id}")

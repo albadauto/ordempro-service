@@ -25,6 +25,7 @@ public interface IServiceOrderMapper {
     @Mapping(target = "tenant", source = "tenants")
     @Mapping(target = "customer", source = "customer")
     @Mapping(target = "status", source = "status")
+    @Mapping(target = "insertDate", source = "insertDate")
     ServiceOrderResponseDTO toDtoResponse(ServiceOrder entity);
     List<ServiceOrderResponseDTO> toDtoResponseList(List<ServiceOrder> entity);
 
