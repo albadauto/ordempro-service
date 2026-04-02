@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Data
 @Entity
 public class PremiumTenants {
@@ -14,7 +16,7 @@ public class PremiumTenants {
     @OneToOne
     @JoinColumn(name="TenantId")
     private Tenants tenants;
-    @OneToOne
-    @JoinColumn(name="PlanId")
-    private Plans plans;
+    private String stripeCustomerId;
+    private LocalDate baseDate;
+    private LocalDate dueDate;
 }
