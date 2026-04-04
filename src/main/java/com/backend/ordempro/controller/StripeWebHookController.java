@@ -6,14 +6,13 @@ import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -23,6 +22,8 @@ public class StripeWebHookController {
     private String endpointSecret;
     private final PremiumTenantsRepository premiumTenantsRepository;
     private final TenantsRepository tenantsRepository;
+    private static final Logger log = LoggerFactory.getLogger(StripeWebHookController.class);
+
     public StripeWebHookController(PremiumTenantsRepository premiumTenantsRepository,
                                    TenantsRepository tenantsRepository){
         this.premiumTenantsRepository = premiumTenantsRepository;
@@ -33,9 +34,11 @@ public class StripeWebHookController {
     public ResponseEntity<String> handleWebhook(@RequestBody String payload,
                                                 @RequestHeader("Stripe-Signature") String sigHeader) {
         Event event;
+        log.info("Webhook recebido do Stripe");
         try {
             event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
         } catch (SignatureVerificationException e) {
+            log.error("Falha na verificação da assinatura do Stripe", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
